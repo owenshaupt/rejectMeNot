@@ -34,5 +34,3 @@ app.get("/", (req, res) => {
 app.use("/api/users", users);
 
 // more on express routing: https://expressjs.com/en/guide/routing.html
-// gyDxAjfYPuYARgEb;
-// mongodb+srv://dev:gyDxAjfYPuYARgEb@rmn-test-zgomz.mongodb.net/test?retryWrites=true&w=majority

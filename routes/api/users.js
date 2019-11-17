@@ -31,47 +31,46 @@ router.post("/register", (req, res) => {
   }
 
   // Check to make sure nobody has already registered with a duplicate email
-  User.find({ email: req.body.email }).then(
-    user => {
-      if (user) {
-        return res.status(400).json({
-          email: "A user with this email already exists"
-        });
-      } else {
-        // Otherwise create a new user
-        const newUser = new User({
-          email: req.body.email,
-          password: req.body.password
-        });
+  User.findOne({ email: req.body.email }).then(user => {
+    console.log("user", user);
+    if (user) {
+      return res.status(400).json({
+        email: "A user with this email already exists"
+      });
+    } else {
+      // Otherwise create a new user
+      const newUser = new User({
+        email: req.body.email,
+        password: req.body.password
+      });
 
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser
-              .save()
-              .then(user => {
-                const payload = { id: user.id, email: user.email };
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then(user => {
+              const payload = { id: user.id, email: user.email };
 
-                // sign(
-                //   payload,
-                //   secretOrKey;,
-                //   // Tell the key to expire in one day
-                //   { expiresIn: 86400 },
-                //   (err, token) => {
-                //     res.json({
-                //       success: true,
-                //       token: "Bearer " + token
-                //     });
-                //   }
-                // );
-              })
-              .catch(err => console.log(err));
-          });
+              // sign(
+              //   payload,
+              //   secretOrKey;,
+              //   // Tell the key to expire in one day
+              //   { expiresIn: 86400 },
+              //   (err, token) => {
+              //     res.json({
+              //       success: true,
+              //       token: "Bearer " + token
+              //     });
+              //   }
+              // );
+            })
+            .catch(err => console.log(err));
         });
-      }
+      });
     }
-  );
+  });
 });
 
 router.post("/login", (req, res) => {
