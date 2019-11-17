@@ -1,18 +1,18 @@
-import { isEmpty } from 'validator';
-import validText from './valid-text';
+const Validator = require("validator");
+const validText = require("./valid-text");
 
-export default function validateLoginInput(data) {
+module.exports = function validateLoginInput(data) {
   let errors = {};
 
-  data.username = validText(data.username) ? data.username : '';
-  data.password = validText(data.password) ? data.password : '';
+  data.email = validText(data.email) ? data.email : "";
+  data.password = validText(data.password) ? data.password : "";
 
-  if (isEmpty(data.username)) {
-    errors.username = 'username field is required';
+  if (Validator.isEmpty(data.email)) {
+    errors.email = "Email is required";
   }
 
-  if (isEmpty(data.password)) {
-    errors.password = 'Password field is required';
+  if (Validator.isEmpty(data.password)) {
+    errors.password = "Password is required";
   }
 
   return {
