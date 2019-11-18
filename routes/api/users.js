@@ -4,8 +4,8 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
-// const sign = jwt.sign;
 const passport = require("passport");
+const keys = require("../../config/keys");
 
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
@@ -17,8 +17,8 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     res.json({
-      id: req.body.id,
-      email: req.body.email
+      id: req.user.id,
+      email: req.user.email
     });
   }
 );
@@ -53,18 +53,18 @@ router.post("/register", (req, res) => {
             .then(user => {
               const payload = { id: user.id, email: user.email };
 
-              // sign(
-              //   payload,
-              //   secretOrKey;,
-              //   // Tell the key to expire in one day
-              //   { expiresIn: 86400 },
-              //   (err, token) => {
-              //     res.json({
-              //       success: true,
-              //       token: "Bearer " + token
-              //     });
-              //   }
-              // );
+              jwt.sign(
+                payload,
+                keys.secretOrKey,
+                // Tell the key to expire in one hour
+                { expiresIn: 3600 },
+                (err, token) => {
+                  res.json({
+                    success: true,
+                    token: "Bearer " + token
+                  });
+                }
+              );
             })
             .catch(err => console.log(err));
         });
@@ -92,26 +92,24 @@ router.post("/login", (req, res) => {
 
     bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
-        res.json({ msg: "Success" });
+        const payload = {
+          id: user.id,
+          email: user.email
+        };
 
-        // const payload = {
-        //   id: user.id,
-        //   email: user.email
-        // };
-
-        // sign(
-        //   payload,
-        //   secretOrKey,
-        //   // Tell the key to expire in one day
-        //   { expiresIn: 86400 },
-        //   (err, token) => {
-        //     res.json({
-        //       success: true,
-        //       token: "Bearer " + token,
-        //       payload
-        //     });
-        //   }
-        // );
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          // Tell the key to expire in one hour
+          { expiresIn: 3600 },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token,
+              payload
+            });
+          }
+        );
       } else {
         return res.status(400).json({ password: "Incorrect password" });
       }

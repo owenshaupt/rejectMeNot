@@ -14,12 +14,13 @@ module.exports = passport => {
       User.findById(jwt_payload.id)
         .then(user => {
           if (user) {
+            // return the user to the frontend
             return done(null, user);
           }
+          // return false since there is no user
           return done(null, false);
         })
-        .catch(err => console.log(err));
-      console.log(jwt_payload);
+        .catch(err => console.log("err", err, "jwt_payload", jwt_payload));
     })
   );
 };
